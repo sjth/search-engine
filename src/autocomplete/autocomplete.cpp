@@ -5,13 +5,13 @@
 #include <algorithm>
 using namespace std;
 class Node{
-public:
+    public:
     Node(char value);
     ~Node();
     Node* children[26];
     char value;
     bool end;
-    long weight;
+    int weight;
 };
 Node::Node(char value){
     this->value = value;
@@ -30,11 +30,11 @@ class Trie
 public:
     Trie();
     ~Trie();
-    void addWord(string s, long weight);
-    void deleteWord(string s);
-    bool checkWord(string s);
+    void addWord(string word, int weight);
+    void deleteWord(string word);
+    bool checkWord(string word);
     Node* getRoot();
-    Node* getNode(string s);
+    Node* getNode(string word);
 private:
     Node* root;
 };
@@ -45,11 +45,11 @@ Trie::Trie(){
 Trie::~Trie(){
 
 }
-void Trie::addWord(string s,long weight){
+void Trie::addWord(string word,int weight){
     Node* currentnode = root;
-    for (int i = 0; i < s.length(); ++i)
+    for (size_t i = 0; i < word.length(); ++i)
     {
-        char currentletter = s.at(i);
+        char currentletter = word.at(i);
         int index = currentletter - 'a';
         if(currentnode->children[index]!=NULL){
             currentnode = currentnode->children[index];
@@ -59,17 +59,17 @@ void Trie::addWord(string s,long weight){
             currentnode->children[index] = tmp;
             currentnode = tmp;
         }
-        if(i == s.length() - 1){
+        if(i == word.length() - 1){
             currentnode->end = true;
             currentnode->weight = weight;
         }
     }
 }
-void Trie::deleteWord(string s){
+void Trie::deleteWord(string word){
     Node* currentnode = root;
-    for (int i = 0; i < s.length(); ++i)
+    for (int i = 0; i < word.length(); ++i)
     {
-        char currentletter = s.at(i);
+        char currentletter = word.at(i);
         int index = currentletter - 'a';
         if(currentnode->children[index]!=NULL){
             currentnode = currentnode->children[index];
@@ -77,16 +77,16 @@ void Trie::deleteWord(string s){
         else{
             return;
         }
-        if(i == s.length() - 1&&currentnode->end){
+        if(i == word.length() - 1&&currentnode->end){
             currentnode->end = false;
         }
     }
 }
-bool Trie::checkWord(string s){
+bool Trie::checkWord(string word){
     Node* currentnode = root;
-    for (int i = 0; i < s.length(); ++i)
+    for (int i = 0; i < word.length(); ++i)
     {
-        char currentletter = s.at(i);
+        char currentletter = word.at(i);
         int index = currentletter - 'a';
         if(currentnode->children[index]!=NULL){
             currentnode = currentnode->children[index];
@@ -94,7 +94,7 @@ bool Trie::checkWord(string s){
         else{
             return false;
         }
-        if(i == s.length() - 1&& !currentnode->end){
+        if(i == word.length() - 1&& !currentnode->end){
             return false;
         }
     }
@@ -103,11 +103,11 @@ bool Trie::checkWord(string s){
 Node* Trie::getRoot(){
     return root;
 }
-Node* Trie::getNode(string s){
+Node* Trie::getNode(string word){
     Node* currentnode = root;
-    for (int i = 0; i < s.length(); ++i)
+    for (int i = 0; i < word.length(); ++i)
     {
-        char currentletter = s.at(i);
+        char currentletter = word.at(i);
         int index = currentletter - 'a';
         if(currentnode->children[index]!=NULL){
             currentnode = currentnode->children[index];
@@ -115,7 +115,7 @@ Node* Trie::getNode(string s){
         else{
             return NULL;
         }
-        if(i == s.length() - 1){
+        if(i == word.length() - 1){
             return currentnode;
         }
     }
@@ -145,7 +145,7 @@ int main()
     ifstream inf("dict.txt");
     while(inf){
         string s1;
-        long s2;
+        int s2;
         inf >> s1 >> s2;
         t->addWord(s1,s2);
     }
