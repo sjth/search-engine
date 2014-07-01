@@ -1,3 +1,10 @@
+/*
+
+Attribution:
+This file is based on https://github.com/redguardtoo/url-normalization-in-c/blob/master/src/cleanurl.c
+
+
+*/
 #ifdef __cplusplus
 extern "C" {
 #endif
