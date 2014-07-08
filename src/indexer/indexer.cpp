@@ -92,7 +92,7 @@ FileIndexer::FileIndexer(bool flag) {
 }
 
 FileIndexer::~FileIndexer() {
-	std::ofstream output("index.txt");
+	std::ofstream output("index.txt", std::ofstream::out | std::ofstream::trunc);
 
 	for (auto x : inverseIndex) {
 		output << x.first << " ";
@@ -104,7 +104,7 @@ FileIndexer::~FileIndexer() {
 	}
 	output.close();
 
-	output.open("document.txt");
+	output.open("document.txt", std::ofstream::out | std::ofstream::trunc);
 	for (auto x : forwardIndex) {
 		output << x.first << " ";
 		output << (int)x.second.size() << " ";
