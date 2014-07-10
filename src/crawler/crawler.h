@@ -25,7 +25,7 @@
     Make sure you have read and write permissions (6) to the actual path represented by URLS_FILE_PATH
 */
 #ifndef URLS_FILE_PATH
-#define URLS_FILE_PATH "/home/sp/projects/cppprojects/crawler/urls.txt"
+#define URLS_FILE_PATH "/home/sp/projects/cppprojects/searchengine/src/crawler/urls.txt"
 #endif
 /*
     The path specified here should not be the same as or within the path specified by WEB_ROOT
@@ -36,7 +36,7 @@
     The value will be overwritten by the program, everytime it runs.
 */
 #ifndef CRAWL_STATUS_FILE_PATH
-#define CRAWL_STATUS_FILE_PATH "/home/sp/projects/cppprojects/crawler/crawl_status.txt"
+#define CRAWL_STATUS_FILE_PATH "/home/sp/projects/cppprojects/searchengine/src/crawler/crawl_status.txt"
 #endif
 /*
     The path specified here should not be the same as or within the path specified by WEB_ROOT
@@ -47,14 +47,20 @@
     The value will be overwritten by the program, everytime it runs.
 */
 #ifndef URL_EXTRACTION_STATUS_FILE_PATH
-#define URL_EXTRACTION_STATUS_FILE_PATH "/home/sp/projects/cppprojects/crawler/url_extraction_status.txt"
+#define URL_EXTRACTION_STATUS_FILE_PATH "/home/sp/projects/cppprojects/searchengine/src/crawler/url_extraction_status.txt"
 #endif
 /*
     Make sure you have permission to write files (4) within the actual directory represented by WEB_ROOT
 */
 #ifndef WEB_ROOT
-#define WEB_ROOT "/home/sp/projects/cppprojects/crawler/webroot"
+#define WEB_ROOT "/home/sp/projects/cppprojects/searchengine/src/crawler/webroot"
 #endif
-
+/*
+    The number of levels you want to crawl. Set this to 2 for this project, unless you know what you are doing.
+    * "2" means it will crawl the listed URLs (level 1) plus any URLs extracted from those crawled web pages (level 2)
+*/
+#ifndef CRAWL_DEPTH
+#define CRAWL_DEPTH 1
+#endif
 
 
