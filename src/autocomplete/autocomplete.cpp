@@ -3,16 +3,7 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
-using namespace std;
-class Node{
-    public:
-    Node(char value);
-    ~Node();
-    Node* children[26];
-    char value;
-    bool end;
-    int weight;
-};
+#include "autocomplete.h"
 Node::Node(char value){
     this->value = value;
     for (int i = 0; i < 26; ++i)
@@ -25,19 +16,6 @@ Node::Node(char value){
 Node::~Node(){
 
 }
-class Trie
-{
-public:
-    Trie();
-    ~Trie();
-    void addWord(string word, int weight);
-    void deleteWord(string word);
-    bool checkWord(string word);
-    Node* getRoot();
-    Node* getNode(string word);
-private:
-    Node* root;
-};
 Trie::Trie(){
     root = new Node(' ');
     root->end = true;
@@ -125,7 +103,6 @@ vector< pair<Node*, string> > nodevector;
 void alphabetize(Node* node, string prefix)
 {
     if (node->end)
-        //cout << prefix << ' ' << node->weight << endl;
         nodevector.push_back(make_pair(node, prefix));
     for (int i = 0; i < 26; ++i)
     {
@@ -155,7 +132,14 @@ int main()
     if(currentnode!=NULL){
         alphabetize(currentnode,ss);
         sort(nodevector.begin(),nodevector.end(),compare);
-        for (int i = 0; i < 10; ++i)
+        int a;
+        if(nodevector.size()>10){
+            a = 10;
+        }
+        else{
+            a = nodevector.size();
+        }
+        for (int i = 0; i < a; ++i)
         {
             cout << nodevector[i].second << endl;
         }
