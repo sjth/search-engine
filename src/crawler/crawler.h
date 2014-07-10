@@ -58,6 +58,7 @@
 /*
     The number of levels you want to crawl. Set this to 2 for this project, unless you know what you are doing.
     * "2" means it will crawl the listed URLs (level 1) plus any URLs extracted from those crawled web pages (level 2)
+    * It will also extract URLs needed for level 3 crawling.
 */
 #ifndef CRAWL_DEPTH
 #define CRAWL_DEPTH 1
