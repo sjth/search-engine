@@ -1,14 +1,17 @@
 #include <vector>
 #include <algorithm>
-class score{
+
+class score {
 private:
-	int TotalNumOfDocumnets;
-	double averagedocumentlength;
-	static bool compare(std::pair<int,double>& p1, std::pair<int,double>& p2);
-	std::vector<std::vector<int> > documents;
-	double bm25(std::vector<int> v);
+	int totalNumOfDocumnets;
+	double averageDocumentLength;
+	std::vector<std::vector<int>> documents;
+
 public:
-	score(std::vector<std::vector<int> > v, int TotalNumOfDocumnetsi, double averagedocumentlength);
+	score(std::vector<std::vector<int>> v, int TotalNumOfDocumnetsi, double averagedocumentlength);
 	~score(){};
+
+public:
 	std::vector<int> calculateScores();
+	double bm25(std::vector<int> v);
 };
