@@ -1,24 +1,38 @@
 #include <string>
-using namespace std;
-class Node{
-    public:
-    Node(char value);
-    ~Node();
-    Node* children[26];
-    char value;
-    bool end;
-    int weight;
-};
-class Trie
-{
-public:
-    Trie();
-    ~Trie();
-    void addWord(string word, int weight);
-    void deleteWord(string word);
-    bool checkWord(string word);
-    Node* getRoot();
-    Node* getNode(string word);
+
+class Node {
 private:
-    Node* root;
+  char value;
+  bool end;
+  int weight;
+  Node* children[26];
+
+public:
+  Node(char value);
+  ~Node() {};
+
+public:
+  bool isEnd();
+  void setEnd(bool _end);
+  char getValue();
+  int getWeight();
+  void setWeight(int _weight);
+  Node* getChild(int _index);
+  void setChild(int _index, Node* _child);
+};
+
+class Trie {
+private:
+  Node* root;
+
+public:
+  Trie();
+  ~Trie() {};
+
+public:
+  Node* getRoot();
+  Node* getNode(std::string word);
+  bool checkWord(std::string word);
+  void deleteWord(std::string word);
+  void addWord(std::string word, int weight);
 };
