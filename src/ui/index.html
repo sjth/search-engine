@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title> Search Engine </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Wikipedia search engine">
+  <meta name="author" content="A group of developers">
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="js/html5shiv.js"></script>
+  <![endif]-->
+  <link rel="shortcut icon" href="img/favicon.png">
+  <script type="text/javascript" src="js/jquery.min.js"></script>
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+		$("#searchform").submit( function(event){
+			var searchTerm = $.trim($('#searchquery').val());
+			if( !searchTerm ){
+				alert('You are supposed to enter a search term!');
+				$('#searchquery').val('');
+				return false;
+			}
+			//This same variable (searchTerm) can be passed as a web request
+		    alert('You searched for: \"' + searchTerm + '\".\n Note: This alert will be replaced by a web request when it is ready.');
+		    //When web interface is ready, populate the variable below (callResponse) with the JSON array returned by the web interface.
+		    var callResponse = '[{"rank":1, "title":"Mathematics - Wikipedia, the free encyclopedia", "url":"http://en.wikipedia.org/wiki/Mathematics","snippet":"Mathematics is the study of topics such as quantity (numbers), structure, space, and change. There is a range of views among mathematicians and philosophers ..."},\
+			    {"rank":2, "title":"Portal:Mathematics - Wikipedia, the free encyclopedia", "url":"http://en.wikipedia.org/wiki/Portal:Mathematics","snippet":"Mathematics is the study of numbers, quantity, space, structure, and change. Mathematicians seek out patterns and formulate new conjectures. Mathematicians ..."},\
+			    {"rank":3, "title":"Category:Mathematics - Wikipedia, the free encyclopedia", "url":"http://en.wikipedia.org/wiki/Category:Mathematics","snippet":"Mathematics (colloquially, maths, or math), is the body of knowledge centered on concepts such as quantity, structure, space, and change, and also the ..."},\
+			    {"rank":4, "title":"Subject:Mathematics - Wikibooks, open books for an open ...", "url":"https://en.wikipedia.org/wiki/wikibooks:Mathematics","snippet":"Books in this subject area deal with mathematics: the study of quantity, structure, space, relation, change, and various topics of pattern, form and entity."},\
+			    {"rank":5, "title":"Mathematics education - Wikipedia, the free encyclopedia", "url":"http://en.wikipedia.org/wiki/Mathematics_education","snippet":"In contemporary education, mathematics education is the practice of teaching and learning mathematics, along with the associated scholarly research."},\
+			    {"rank":6, "title":"Mathematics - Wikiquote", "url":"http://en.wikipedia.org/wiki/Wikiquote:Mathematics","snippet":"Mathematics is the body of knowledge centered on concepts such as quantity, structure, space, and change, and the academic discipline which studies them."},\
+			    {"rank":7, "title":"Book:Mathematics - Wikipedia, the free encyclopedia", "url":"http://en.wikipedia.org/wiki/Book:Mathematics","snippet":"This is a Wikipedia book, a collection of Wikipedia articles that can be easily saved, rendered electronically, and ordered as a printed book. For information and ..."},\
+			    {"rank":8, "title":"Mathematics (producer) - Wikipedia, the free encyclopedia", "url":"http://en.wikipedia.org/wiki/Mathematics_(producer)","snippet":"Mathematics, also known as Allah Mathematics, (born: Ronald Maurice Bean) is a hip hop producer and DJ for the Wu-Tang Clan and its solo and affiliate ..."},\
+			    {"rank":9, "title":"LaTeX/Mathematics - Wikibooks, open books for an open ...", "url":"http://en.wikipedia.org/wiki/b:LaTeX/Mathematics","snippet":"If your document requires only a few simple mathematical formulas, plain LaTeX has most of the tools that you will need. If you are writing a scientific document ..."},\
+			    {"rank":10, "title":"Wikipedia:WikiProject Mathematics - Wikipedia, the free ...", "url":"http://en.wikipedia.org/wiki/Wikipedia:WikiProject_Mathematics","snippet":"This project aims to enable Wikipedians to cooperate, make suggestions and share ideas on the organization and improvement of the mathematics coverage of ..."},\
+			    {"rank":11, "title":"Mathematician - Wikipedia, the free encyclopedia", "url":"http://en.wikipedia.org/wiki/Mathematician","snippet":"A mathematician is a person with an extensive knowledge of mathematics who uses this knowledge in their work, typically to solve mathematical problems."},\
+			    {"rank":12, "title":"Philosophy of mathematics - Wikipedia, the free encyclopedia", "url":"http://en.wikipedia.org/wiki/Philosophy_of_mathematics","snippet":"The philosophy of mathematics is the branch of philosophy that studies the philosophical assumptions, foundations, and implications of mathematics. The aim of ..."},\
+			    {"rank":13, "title":"Annals of Mathematics - Wikipedia, the free encyclopedia", "url":"http://en.wikipedia.org/wiki/Annals_of_Mathematics","snippet":"The Annals of Mathematics is a bimonthly mathematical journal published by Princeton University and the Institute for Advanced Study."},\
+			    {"rank":14, "title":"Wolf Prize in Mathematics - Wikipedia, the free encyclopedia", "url":"http://en.wikipedia.org/wiki/Wolf_Prize_in_Mathematics","snippet":"The Wolf Prize in Mathematics is awarded almost annually by the Wolf Foundation in Israel. It is one of the six Wolf Prizes established by the Foundation and ..."}]';	
+		    var results = JSON.parse(callResponse);
+		    results = results.reverse(); 
+		    $.each(results, function(idx, obj) {
+	            var resultElement = '<div class="span10"> <a href="' + obj.url + '"> ' + obj.rank + '. ' + obj.title + ' </a> <p> ' + obj.snippet + ' </p></div>';
+	            $("#searchform").after(resultElement);
+            });
+            var headerElement='<div class="top-space-60"><h3>Search Results</h3><h4 id="resultheader"> 13 Results </h4>';
+            $("#searchform").after(headerElement);
+		    event.preventDefault();
+		    return false;
+	    });
+    });
+  </script>
+</head>
+<body>
+<div class="container">
+	<div class="row clearfix">
+					<div class="top-space-20">
+			</div>
+		<div class="col-md-9 column">
+			<nav class="navbar navbar-default" role="navigation">
+				<div class="navbar-header">
+
+					 <a class="navbar-brand" href="#">Wikipedia Search Engine</a>
+				</div>
+			</nav>
+			<div class="top-space-60">
+			</div>
+			<h3>
+				Custom Search
+			</h3>
+			
+			<form id="searchform">
+				<div class="form-group top-space-20">
+					 <input type="text" class="form-control" id="searchquery" placeholder="Enter search term">
+				</div>
+				<div class="form-group">
+				<input type="submit" class="btn btn-default" value="Search"/>
+                </div>				
+
+			</form>
+
+			<div class="row clearfix">
+				<div class="col-md-12 column">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row clearfix">
+
+	</div>
+</div>
+<div class="footer">&copy; Copyright 2014 Members of https://github.com/SearchEngineMentoringGroup/search-engine/. All rights reserved.</div>
+</body>
+</html>

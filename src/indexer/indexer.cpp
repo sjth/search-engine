@@ -1,32 +1,10 @@
-#include <iostream>
 #include <fstream>
-#include <vector>
-#include <string>
-#include <algorithm>
-#include <unordered_map>
+#include "indexer.h"
 
-struct SingleDocPostings {
-	int docID;
-	int position;
-
-	SingleDocPostings(int _docID, int _position) {
-		docID = _docID;
-		position = _position;
-	}
-	~SingleDocPostings() {};
-};
-
-class PostingList {
-private:
-	std::vector<SingleDocPostings> posting;
-
-public:
-	PostingList() {};
-	~PostingList() {};
-
-	std::vector<SingleDocPostings> getPostingList();
-	void updatePostingList(int _docID, int _position);
-};
+SingleDocPostings::SingleDocPostings(int _docID, int _position) {
+	docID = _docID;
+	position = _position;
+}
 
 std::vector<SingleDocPostings> PostingList::getPostingList() {
 	return posting;
@@ -35,29 +13,6 @@ std::vector<SingleDocPostings> PostingList::getPostingList() {
 void PostingList::updatePostingList(int _docID, int _position) {
 	posting.push_back(SingleDocPostings(_docID, _position));
 	return;
-}
-
-class FileIndexer {
-private:
-	std::unordered_map<std::string, PostingList> inverseIndex;
-	std::unordered_map<int, std::vector<std::string>> forwardIndex;
-	int docIDAssigner;
-
-public:
-	FileIndexer(bool flag);
-	~FileIndexer();
-
-	void putDocument(const std::vector<std::string>& parsedDoc);
-	PostingList getPostingLists(const std::string word);
-	std::vector<std::string> getDocumentText(int _docID);
-};
-
-void FileIndexer::putDocument(const std::vector<std::string>& parsedDoc) {
-	forwardIndex[++docIDAssigner] = parsedDoc;
-	int position = -1;
-	for (std::string x : parsedDoc) {
-		inverseIndex[x].updatePostingList(docIDAssigner, ++position);
-	}
 }
 
 FileIndexer::FileIndexer(bool flag) {
@@ -92,7 +47,7 @@ FileIndexer::FileIndexer(bool flag) {
 }
 
 FileIndexer::~FileIndexer() {
-	std::ofstream output("index.txt");
+	std::ofstream output("index.txt", std::ofstream::out | std::ofstream::trunc);
 
 	for (auto x : inverseIndex) {
 		output << x.first << " ";
@@ -104,7 +59,7 @@ FileIndexer::~FileIndexer() {
 	}
 	output.close();
 
-	output.open("document.txt");
+	output.open("document.txt", std::ofstream::out | std::ofstream::trunc);
 	for (auto x : forwardIndex) {
 		output << x.first << " ";
 		output << (int)x.second.size() << " ";
@@ -114,29 +69,18 @@ FileIndexer::~FileIndexer() {
 	}
 }
 
+void FileIndexer::putDocument(const std::vector<std::string>& parsedDoc) {
+	forwardIndex[++docIDAssigner] = parsedDoc;
+	int position = -1;
+	for (std::string x : parsedDoc) {
+		inverseIndex[x].updatePostingList(docIDAssigner, ++position);
+	}
+}
+
 PostingList FileIndexer::getPostingLists(const std::string word) {
 	return inverseIndex[word];
 }
 
 std::vector<std::string> FileIndexer::getDocumentText(int _docID) {
 	return forwardIndex[_docID];
-}
-
-int main() {
-	std::vector<std::string> doc1 = { "it", "is", "what", "it", "is" };
-	std::vector<std::string> doc2 = { "what", "is", "it" };
-	std::vector<std::string> doc3 = { "it", "is", "a", "banana" };
-
-	FileIndexer F(true);
-	F.putDocument(doc1);
-	F.putDocument(doc2);
-	F.putDocument(doc3);
-
-	PostingList P1 = F.getPostingLists("is");
-	std::cout << "[is]\n";
-	for (SingleDocPostings x : P1.getPostingList()) {
-		std::cout << "(" << x.docID << ", " << x.position << ")\n";
-	}
-
-	return 0;
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This file was auto-generated from WSDL -->
+<!-- by the Apache Axis2 version: 1.6.2  Built on : Apr 17, 2012 (05:33:49 IST) -->
+<service name="Searcher">
+    <parameter name="ServiceClass">Searcher</parameter>
+    <description>Searcher Service
+            </description>
+    <operation name="searchserve" mep="http://www.w3.org/ns/wsdl/in-out">
+        <parameter name="wsamapping">urn:searchserve</parameter>
+    </operation>
+</service>

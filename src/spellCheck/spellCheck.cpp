@@ -1,42 +1,24 @@
 #include <vector>
-#include <string>
 #include <fstream>
 #include <iostream>
 #include <algorithm>
-#include <unordered_map>
 #include <unordered_set>
-using namespace std;
-
-class SpellCheck {
-
-private:
-	unordered_map <string, vector<string>> dictionary;
-	unordered_map <string, vector<string>> common;
-	unordered_map <string, int> valid;
-
-public:
-	SpellCheck();
-	~SpellCheck() {};
-
-public:
-	int editDistance(const string& word1, const string& word2);
-	vector <string> correctSpelling(const string& word);
-	vector<string> correctSpellingSmall(const string& word);
-};
+#include <unordered_map>
+#include "SpellCheck.h"
 
 SpellCheck::SpellCheck() {
-	cout << "Building Dictionary...\n";
-	cout << "Generating 3-grams...";
+	std::cout << "Building Dictionary...\n";
+	std::cout << "Generating 3-grams...";
 	int counter = 0;
 	//! Use `cat /usr/share/dict/words` to create dictionary
-	ifstream input("dictionary.txt");
+	std::ifstream input("dictionary.txt");
 	if (input.is_open()) {
-		string word;
+		std::string word;
 		while (!input.eof()) {
 			counter++;
 			input >> word;
 			valid[word] = 1;
-			transform(word.begin(), word.end(), word.begin(), ::tolower);
+			std::transform(word.begin(), word.end(), word.begin(), ::tolower);
 			if ((int)word.length() == 2) {
 				dictionary[word].push_back(word);
 			}
@@ -46,36 +28,102 @@ SpellCheck::SpellCheck() {
 					dictionary[word.substr(i, 3)].push_back(word);
 				}
 			}
-			if (counter % 10000 == 0) cout << '.';
+			if (counter % 10000 == 0) std::cout << '.';
 		}
 	}
 	input.close();
 
-	cout << "completed!\n";
-	cout << "Adding common spelling mistakes...";
+	std::cout << "completed!\n";
+	std::cout << "Adding common spelling mistakes...";
 
 	//! Got common spelling mistakes from Wikipedia
 	input.open("common.txt");
 	if (input.is_open()) {
-		string word1, word2;
+		std::string word1, word2;
 		while (!input.eof()) {
 			input >> word1 >> word2;
-			common[word1].push_back(word2);
+			commonMistakes[word1].push_back(word2);
 		}
 	}
 	input.close();
 
-	cout << "completed!\n";
-	cout << "All Set!\n";
+	std::cout << "completed!\n";
+	std::cout << "All Set!\n";
 }
 
-vector<string> SpellCheck::correctSpellingSmall(const string& word){
-	vector<pair<string, string>> pairs;
-	unordered_set<string> all;
-	string str;
+//! Needleman Wunsh Algorithm for calculating edit distance between 2 strings
+int SpellCheck::editDistance(const std::string& word1, const std::string& word2) {
+	std::vector<std::vector<int>> table(word1.length() + 1, std::vector<int>(word2.length() + 1));
+
+	for (int i = 1; i <= (int)word1.length(); i++)
+		table[i][0] = -i;
+	for (int j = 1; j <= (int)word2.length(); j++)
+		table[0][j] = -j;
+
+	for (int i = 1; i <= (int)word1.length(); i++)
+	for (int j = 1; j <= (int)word2.length(); j++) {
+		table[i][j] = table[i - 1][j - 1] + (word1[i - 1] == word2[j - 1] ? 2 : -1);	//! match/mismatch
+		table[i][j] = std::max(table[i][j], table[i - 1][j] - 1);	//! delete
+		table[i][j] = std::max(table[i][j], table[i][j - 1] - 1);	//! insert
+	}
+
+	return table[word1.length()][word2.length()];
+}
+
+//! Correcting spelling mistakes based on 3-gram and common spelling mistakes.
+std::vector<std::string> SpellCheck::correctSpellingLarge(const std::string& word) {
+	std::unordered_set <std::string> stringSet;
+	std::vector <std::pair<std::string, int>> resultMapper;
+	if ((int)word.length() <= 2) {
+		auto x = dictionary[word];
+		for (auto y : x) {
+			stringSet.insert(y);
+		}
+	}
+	else {
+		for (int i = 0; i < (int)(word.length() - 2); i++) {
+			auto x = dictionary[word.substr(i, 3)];
+			for (auto y : x) {
+				stringSet.insert(y);
+			}
+		}
+	}
+
+	for (auto z : stringSet) {
+		//! pair <word, "edit distance from input word">
+		resultMapper.push_back(std::pair<std::string, int>(z, editDistance(z, word)));
+	}
+
+	//! Ranking based on editdistance
+	sort(resultMapper.begin(), resultMapper.end(), [](std::pair<std::string, int> a, std::pair<std::string, int> b) {
+		return a.second > b.second;
+	});
+
+	//! Final sorted list of words
+	std::vector <std::string> result;
+
+	for (auto x : resultMapper) {
+		result.push_back(x.first);
+	}
+
+	//! If it is a common mistake, add solution in front for result_final vector [highest rank]
+	if (commonMistakes.count(word)){
+		auto x = commonMistakes[word];
+		for (auto y : x) {
+			result.insert(result.begin(), y);
+		}
+	}
+
+	return result;
+}
+
+std::vector<std::string> SpellCheck::correctSpellingSmall(const std::string& word) {
+	std::vector<std::pair<std::string, std::string>> pairs;
+	std::unordered_set<std::string> all;
+	std::string str;
 
 	for (int i = 0; i <= (int)word.length(); i++) {
-		pairs.push_back(pair<string, string>(word.substr(0, i), word.substr(i)));
+		pairs.push_back(std::pair<std::string, std::string>(word.substr(0, i), word.substr(i)));
 	}
 
 	for (auto x : pairs) {
@@ -108,109 +156,17 @@ vector<string> SpellCheck::correctSpellingSmall(const string& word){
 		}
 	}
 
-	vector<string> result(all.begin(), all.end());
+	std::vector<std::string> result(all.begin(), all.end());
 	return result;
 }
 
+std::vector<std::string> SpellCheck::correctSpelling(std::string word) {
+	transform(word.begin(), word.end(), word.begin(), ::tolower);
 
-//! Needleman Wunsh Algorithm for calculating edit distance between 2 strings
-int SpellCheck::editDistance(const string& word1, const string& word2) {
-	vector<vector<int>> table(word1.length() + 1, vector<int>(word2.length() + 1));
-
-	for (int i = 1; i <= (int)word1.length(); i++)
-		table[i][0] = -i;
-	for (int j = 1; j <= (int)word2.length(); j++)
-		table[0][j] = -j;
-
-	for (int i = 1; i <= (int)word1.length(); i++)
-	for (int j = 1; j <= (int)word2.length(); j++) {
-		table[i][j] = table[i - 1][j - 1] + (word1[i - 1] == word2[j - 1] ? 2 : -1);	//! match/mismatch
-		table[i][j] = std::max(table[i][j], table[i - 1][j] - 1);	//! delete
-		table[i][j] = std::max(table[i][j], table[i][j - 1] - 1);	//! insert
-	}
-
-	return table[word1.length()][word2.length()];
-}
-
-//! Correcting spelling mistakes based on 3-gram and common spelling mistakes.
-vector <string> SpellCheck::correctSpelling(const string& word) {
-	unordered_set <string> stringSet;
-	vector <pair<string, int>> resultMapper;
-	if ((int)word.length() <= 2) {
-		auto x = dictionary[word];
-		for (auto y : x) {
-			stringSet.insert(y);
-		}
+	if ((int)word.length() < 5) {
+		return correctSpellingSmall(word);
 	}
 	else {
-		for (int i = 0; i < (int)(word.length() - 2); i++) {
-			auto x = dictionary[word.substr(i, 3)];
-			for (auto y : x) {
-				stringSet.insert(y);
-			}
-		}
+		return correctSpellingLarge(word);
 	}
-
-	for (auto z : stringSet) {
-		//! pair <word, "edit distance from input word">
-		resultMapper.push_back(pair<string, int>(z, editDistance(z, word)));
-	}
-
-	//! Ranking based on editdistance
-	sort(resultMapper.begin(), resultMapper.end(), [](pair<string, int> a, pair<string, int> b) {
-		return a.second > b.second;
-	});
-
-	//! Final sorted list of words
-	vector <string> result;
-
-	for (auto x : resultMapper) {
-		result.push_back(x.first);
-	}
-
-	//! If it is a common mistake, add solution in front for result_final vector [highest rank]
-	if (common.count(word)){
-		auto x = common[word];
-		for (auto y : x) {
-			result.insert(result.begin(), y);
-		}
-	}
-
-	return result;
-}
-
-int main() {
-	//! NOTE: Building dictionary takes few seconds
-	SpellCheck s;
-	string word;
-	while (1) {
-		cout << "Enter a word: ";
-		cin >> word;
-		transform(word.begin(), word.end(), word.begin(), ::tolower);
-
-		vector<string> result;
-		if ((int)word.length() < 5) {
-			result = s.correctSpellingSmall(word);
-		}
-		else {
-			result = s.correctSpelling(word);
-		}
-
-		if (result.empty()) {
-			cout << "No Suggestions!\n";
-		}
-		else {
-			cout << "Suggested Words:";
-			int counter = 0;
-
-			//! Displaying top 5 result
-			for (auto x = result.begin(); (x != result.end()) && (counter < 5); x++) {
-				cout << "  " << *x;
-				counter++;
-			}
-			cout << "\n";
-		}
-	}
-
-	return 0;
 }
